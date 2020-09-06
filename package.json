@@ -1,0 +1,36 @@
+{
+  "name": "slate-js-editor",
+  "version": "1.0.0",
+  "description": "Slate js editor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject"
+  },
+  "author": "Deependra Singh",
+  "license": "ISC",
+  "dependencies": {
+    "immutable": "^4.0.0-rc.12",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-emotion": "^10.0.0",
+    "react-scripts": "^3.4.3",
+    "slate": "^0.58.4",
+    "slate-prop-types": "^0.5.44",
+    "slate-react": "^0.58.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
