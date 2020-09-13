@@ -1,7 +1,7 @@
 //Import react dependencies
 import React, { useMemo, useState, useCallback } from "react";
 //Import the slate editor factory
-import { createEditor, Transforms, Editor } from "slate";
+import { createEditor, Transforms, Editor, Node, Range, Point } from "slate";
 
 //Import the slate components and React plugin
 import { Slate, Editable, withReact } from "slate-react";
@@ -54,7 +54,7 @@ const CustomEditor = {
         Transforms.setNodes(
             editor,
             { bold: isActive ? null : true },
-            { match: n =>  n.type === 'Text', split: true }
+            { match: n => n.type === 'Text', split: true }
         )
     }
 }
@@ -71,9 +71,16 @@ const TextEditor = () => {
     // Add the initial value when setting up our state.
     const [value, setValue] = useState([
         {
-            type: 'paragraph',
-            children: [{ text: 'A line of text in a paragraph.' }],
+            type: 'heading1',
+            children: [{
+                isInline: true,
+                text: ''
+            }],
         },
+        {
+            type: 'paragraph',
+            children: [{ text: '' }]
+        }
     ])
 
 
@@ -85,10 +92,12 @@ const TextEditor = () => {
                 return <CodeElement {...props} />
             case 'list':
                 return <ListElement {...props} />
+            case 'heading1':
+                return <h1 {...props.attributes}>{props.children}</h1>
             default:
                 return <DefaultElement {...props} />
         }
-    })
+    }, [])
 
 
     const Leaf = props => {
@@ -108,14 +117,33 @@ const TextEditor = () => {
     }, [])
 
 
+    const backspaceHandler = useCallback(editor => {
+
+        console.log(editor.selection)
+        if (editor.selection && Range.isCollapsed(editor.selection)) {
+            console.log("Yes collapsed!!")
+            console.log(editor.selection.focus);
+            //check if we are in second node with offset 0
+            //return true to prevent the event
+            console.log("path")
+            console.log(editor.selection.focus.path[0]);
+            console.log(editor.selection.focus.offset)
+            if (editor.selection.focus.path[0] === 1 && editor.selection.focus.offset === 0) {
+                console.log("Condition matched !!")
+                return true;
+            }
+        }
+    }, [])
+
+
     return (
 
         <Slate
             editor={editor}
             value={value}
             onChange={newValue => setValue(newValue)} >
-            
-            <div>
+
+            {/* <div>
                 <button
                     onMouseDown={event => {
                         event.preventDefault()
@@ -132,23 +160,44 @@ const TextEditor = () => {
                 >
                     Code Block
         </button>
-            </div>
+            </div> */}
             <Editable
 
-                placeholder = {"Please enter text"}
-                editor = {Editor}
-                
+                placeholder={"Please enter text"}
+                editor={Editor}
+
                 // Pass in the 'renderElement' function
                 renderElement={renderElement}
 
                 renderLeaf={renderLeaf}
 
+
                 //Registering handlers
                 //Defining a new handler with prints the key that was pressed
                 onKeyDown={event => {
 
+                    if (event.key === 'Enter') {
+                        console.log("Enter key pressed!!")
+
+                        event.preventDefault();
+
+                        const element = { type: 'paragraph', children: [{ text: '' }] }
+                        Transforms.insertNodes(editor, element)
+                    }
+
+                    if (event.key === 'Backspace') {
+                        console.log("Backspace Pressed!!");
+                        const isBlockBack = backspaceHandler(editor);
+                        if(isBlockBack){
+                            event.preventDefault();
+                            
+                        }
+
+                    }
                     if (!event.ctrlKey)
                         return;
+
+                    console.log(editor);
 
                     switch (event.key) {
 
