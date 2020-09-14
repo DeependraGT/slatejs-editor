@@ -60,6 +60,25 @@ const CustomEditor = {
 }
 
 
+const withMyEditor = editor =>{
+
+    const {isInline} = editor;
+
+    editor.isInline = (...args) => {
+
+        const [match]  = Editor.nodes(editor,
+            {
+                match : n => n.type === 'heading1'
+            })
+
+        if(match){
+            return true;
+        }
+        isInline(...args)
+    }
+    return editor;
+}
+
 
 
 const TextEditor = () => {
@@ -171,10 +190,12 @@ const TextEditor = () => {
 
                 renderLeaf={renderLeaf}
 
-
+                
                 //Registering handlers
                 //Defining a new handler with prints the key that was pressed
                 onKeyDown={event => {
+
+                    console.log(editor);
 
                     if (event.key === 'Enter') {
                         console.log("Enter key pressed!!")
